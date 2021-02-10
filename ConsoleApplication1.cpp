@@ -5,23 +5,35 @@ using namespace std;
 
 int boyut;
 int length, height;
-char screen[100][100];
-int screenx;
-int screeny;
+int score = 0;
+bool gameUpdate = true;
+string dif;
 
-int n = 1;
+void ClearScreen() 
+{
+    HANDLE hOut;
+    COORD Position;
+    hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+    Position.X = 0;
+    Position.Y = 0;
+    SetConsoleCursorPosition(hOut, Position);
+}
 
 class Ekran {
 public:
-    Ekran(int x, int y) {
+    Ekran() {
+    }
+
+
+    void initEkran(int x, int y) {
         screenx = x;
         screeny = y;
         for (int i = 0; i < screeny; i++) {
             for (int j = 0; j < screenx; j++) {
-                if (i == 0 || i == screeny - 1) {
+                if (j == 0) {
                     screen[j][i] = '#';
                 }
-                else if (j == 0) {
+                else if (i == 0 || i == screeny - 1) {
                     screen[j][i] = '#';
                 }
                 else {
@@ -31,110 +43,152 @@ public:
             cout << endl;
         }
     }
-    void drawScreen() {
-        system("cls");
-        for (int i = 0; i < screeny; i++) {
-            for (int j = 0; j < screenx; j++) {
-                cout << screen[j][i] << " ";
-            }
-            cout << endl;
+    void addChar(int x, int y, char c) {
+        if (x != 0 && x != screenx - 1  && y != 0 && y != screeny - 1) {
+            screen[x][y] = c;
         }
     }
-};
-class Player {
-public:
-    Player(int x, int y, char e, int d) {
-        posx = x;
-        posy = y;
-        c = e;
-        size = d;
-        if (x != 0 && x != screenx  && y != 0 && y != screeny ) {
-            for (int i = 0; i < d; i++) {
-                screen[x][y] = e;
-                 y++;
-            }
+    void moveChar(int x, int y, char c, int r, int l) {
+        if (x != 0 && x != screenx - 1 && y != 0 && y != screeny - 1 && x + r != 0 && x + r != screenx - 1 && y + l != 0 && y + l != screeny - 1) {
+            screen[x][y] = ' ';
+            screen[x + r][y + l] = c;
         }
+
+        
     }
-    void move(int mod) {
-        if (mod == 0) {
-            if (posx != 0 && posx != screenx + 1 && posy != 0 && posy != screeny - 1 && posx + yatay != 0 && posx + yatay != screenx + 1 && posy + dusey != 0 && posy + dusey != screeny - 1) {
-                screen[posx][posy] = ' ';
-                screen[posx + yatay][posy + dusey] = c;
+    void drawScreen(string mod) {
+        if (mod == "Normal") {
+            x = "";
+            for (int i = 0; i < screeny; i++) {
+                for (int j = 0; j < screenx; j++) {
+                    x += screen[j][i];
+                    x += " ";
+                }
+                x += "\n";
             }
-            posx = posx + yatay;
-            posy = posy + dusey;
-            if (posx == 1 && yatay == -1) {
-                yatay = yatay * -1;
-            }
-            if (posx == length-2 && (posy == q || posy == q + (size - 1)|| posy == q +size) && yatay == 1) {                    //burasý
-                yatay = yatay * -1;
-            }
-            if (posx == length + 1 &&  yatay == 1) {                    //burasý
-                yatay = yatay * -1;
-            }
-            if ((posy == 1 && dusey == -1) || (posy == height - 2 && dusey == 1)) {
-                dusey = dusey * -1;
-            }
-            if (GetAsyncKeyState(VK_UP) < 0) {
-                q--;
-            }
-            if (GetAsyncKeyState(VK_DOWN) < 0) {
-                q++;
-            }
-            
-            if (posx == length + 1) {
-                system("cls");
-                system("pause");
-                cout << "Game Over" << endl;;
-                cout << "Try again?" << endl;
-                system("pause");
-            }
+            system("cls");
+            cout << x;
         }
-        else if (mod == 1) {
-            if (GetAsyncKeyState(VK_UP) < 0) {
-                if(posy != 1){
-                    screen[posx][posy + (size - 1)] = ' ';
-                    screen[posx][posy - 1] = c;
-                    posy--;
+        else if (mod == "Hard") {
+            x = "";
+            for (int i = 0; i < screeny; i++) {
+                for (int j = 0; j < screenx; j++) {
+                    x += screen[j][i];
+                    x += " ";
                 }
+                x += "\n";
             }
-            else if (GetAsyncKeyState(VK_DOWN) < 0) {
-                if (posy + size != screeny - 1) {
-                    screen[posx][posy] = ' ';
-                    screen[posx][posy + size] = c;
-                    posy++;
+            ClearScreen();
+            cout << x;
+        }
+        else {
+            x = "";
+            for (int i = 0; i < screeny; i++) {
+                for (int j = 0; j < screenx; j++) {
+                    x += screen[j][i];
+                    x += " ";
                 }
+                x += "\n";
             }
+            ClearScreen();
+            cout << x;
         }
     }
 private:
-    char c ;
-    int q = 3;
-    int posx = 1;
-    int posy = 1;
-    int dusey = 1;
+    string x;
+    char screen[100][100];
+    int screeny;
+    int screenx;
+    
+};
+
+Ekran ekran;
+
+class Player {
+public:
+    Player(int x, int y, char c, int size) {
+        playerx = x;
+        playery = y;
+        players = c;
+        playeru = size;
+        playery2 = playery - playeru - 1;
+        for (int i = playery; i > playery - playeru; i--) {
+            ekran.addChar(playerx, i, players);
+        }
+    }
+    void move(int mod, int y1, int y2) {
+        if (mod == 1) {
+            ekran.moveChar(playerx, playery2, players, 0, playeru);
+            if (playery != height - 1) {
+                playery2 += 1;
+                playery += 1;
+            }
+        }
+        else if (mod == -1) {
+            ekran.moveChar(playerx, playery, players, 0, -playeru);
+            if (playery2 != 0) {
+                playery2 -= 1;
+                playery -= 1;
+            }
+        }
+        else if (mod == 0) {
+            ekran.moveChar(playerx, playery, players, yatay, dusey);
+            playerx += yatay;
+            playery += dusey;
+            if (playerx == length - 2) {
+                gameUpdate = false;
+            }
+            if ((playery >= y2 && playery <= y1) && playerx == length - 3 ) {
+                yatay = yatay * -1;
+                score++;
+            }
+            else if (playerx == 1 && yatay == -1) {
+                yatay = yatay * -1;
+            }
+            if ((playery == 1 && dusey == -1) || (playery == height - 2 && dusey == 1)) {
+                dusey = dusey * -1;
+            }
+        }
+    }
+
+    int getY() { return playery; }
+    int getY2() { return playery2; }
+        
+private:
+    int playerx, playery, playeru, playery2;
     int yatay = 1;
-    int size;
+    int dusey = 1;
+    char players;
 };
 
 int main() {
-    cout << "Please Insert " << endl;
-    cout << "Lenght: ";
+    cout << "Map Length" << endl;
     cin >> length;
-    cout << "Height: ";
+    cout << "Map Height" << endl;
     cin >> height;
-    cout << "Racket size: ";
+    cout << "Racket Size" << endl;
     cin >> boyut;
+    cout << "Difficulty(Normal/Hard)" << endl;
+    cin >> dif;
     system("pause");
-    Ekran ekran(length, height);
-    Player top(5, 3, 'O', 1);
-    Player raket(length - 1, 3, '|', boyut);
-    while (true) {
-        raket.move(1);
-        top.move(0);
-        ekran.drawScreen();
+    ekran.initEkran(length, height);
+    Player top(1, 1, 'O', 1);
+    Player raket(length - 2, height - 2, '|', boyut);
+    while (gameUpdate) {
+        top.move(0, raket.getY(), raket.getY2());
+        ekran.drawScreen(dif);
         Sleep(20);
+        if (GetAsyncKeyState(VK_DOWN) < 0) {
+            raket.move(1, 0, 0);
+        }
+        if (GetAsyncKeyState(VK_UP) < 0) {
+            raket.move(-1, 0, 0);
+        }
+        cout << "score: " << score << endl;
     }
+    ekran.drawScreen(dif);
+    cout << "score: " << score << endl;
+    cout << "Good Luck Next Time :D" << endl;
     system("pause");
     return 0;
 }
