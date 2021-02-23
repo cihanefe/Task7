@@ -57,7 +57,7 @@ public:
         
     }
     void drawScreen(string mod) {
-        if (mod == "Normal") {
+        if (mod == "Normal" || mod == "normal") {
             x = "";
             for (int i = 0; i < screeny; i++) {
                 for (int j = 0; j < screenx; j++) {
@@ -67,18 +67,6 @@ public:
                 x += "\n";
             }
             system("cls");
-            cout << x;
-        }
-        else if (mod == "Hard") {
-            x = "";
-            for (int i = 0; i < screeny; i++) {
-                for (int j = 0; j < screenx; j++) {
-                    x += screen[j][i];
-                    x += " ";
-                }
-                x += "\n";
-            }
-            ClearScreen();
             cout << x;
         }
         else {
@@ -184,10 +172,10 @@ int main() {
         if (GetAsyncKeyState(VK_UP) < 0) {
             raket.move(-1, 0, 0);
         }
-        cout << "score: " << score << endl;
+        cout << "    SCORE: " << score <<"      "<< endl;
     }
     ekran.drawScreen(dif);
-    cout << "score: " << score << endl;
+    cout << "    SCORE: " << score <<"      "<< endl;
     cout << "Good Luck Next Time :D" << endl;
     system("pause");
     return 0;
